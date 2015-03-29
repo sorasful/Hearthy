@@ -1,5 +1,5 @@
 from hearthy.protocol.type_builder import Builder
-from hearthy.protocol import game_utilities, mtypes
+from hearthy.protocol import game_utilities, pegasus_shared, mtypes
 
 def _anon():
     builder = Builder()
@@ -32,6 +32,98 @@ def _anon():
 
     builder.add('GetAccountInfo', [
         (1, 'request', 'enum')
+    ])
+
+    builder.add('AdventureOptions', [
+        (1, 'adventure_id', 'int32'),
+        (2, 'options', 'uint64')
+    ])
+
+    builder.add('ProfileProgress', [
+        (1, 'progress', 'int64'),
+        (2, 'best_forge', 'int32'),
+        (3, 'last_forge', pegasus_shared.Date),
+        (4, 'display_banner', 'int32'),
+        (5, 'adventure_options', 'AdventureOptions[]')
+    ])
+
+    builder.add('MedalInfo', [
+        (3, 'season_wins', 'int32'),
+        (6, 'stars', 'int32'),
+        (7, 'streak', 'int32'),
+        (8, 'star_level', 'int32'),
+        (9, 'level_start', 'int32'),
+        (10, 'level_end', 'int32'),
+        (11, 'can_lose', 'bool'),
+        (13, 'legend_rank', 'int32')
+    ])
+
+    builder.add('DeckList', [
+        (1, 'decks', [pegasus_shared.DeckInfo])
+    ])
+
+    builder.add('ProfileDeckLimit', [
+        (1, 'deck_limit', 'int32')
+    ])
+
+    builder.add('GoldBalance', [
+        (1, 'capped_balance', 'int64'),
+        (2, 'bonus_balance', 'int64'),
+        (3, 'cap', 'int64'),
+        (4, 'cap_warning', 'int64')
+    ])
+
+    builder.add('ArcaneDustBalance', [
+        (1, 'balance', 'int64')
+    ])
+
+    builder.add('RewardProgress', [
+        (1, 'season_end', pegasus_shared.Date),
+        (2, 'wins_per_gold', 'int32'),
+        (3, 'gold_per_reward', 'int32'),
+        (4, 'max_gold_per_day', 'int32'),
+        (5, 'season_number', 'int32'),
+        (8, 'pack_id', 'int32'),
+        (9, 'xp_solo_limit', 'int32'),
+        (10, 'max_hero_level', 'int32'),
+        (11, 'next_quest_cancel', pegasus_shared.Date),
+        (12, 'event_timing_mod', 'float')
+    ])
+
+    builder.add('PlayerRecord', [
+        (1, 'type', 'int32'),
+        (2, 'data', 'int32'),
+        (3, 'wins', 'int32'),
+        (4, 'losses', 'int32'),
+        (5, 'ties', 'int32')
+    ])
+
+    builder.add('PlayerRecords', [
+        (1, 'records', 'PlayerRecord[]')
+    ])
+
+    builder.add('CardBacks', [
+        (1, 'default_card_back', 'int32'),
+        (2, 'card_backs', 'int32[]')
+    ])
+
+    builder.add('SpecialEventTiming', [
+        (1, 'event', 'string'),
+        (2, 'start', 'uint64'),
+        (3, 'end', 'uint64')
+    ])
+
+    builder.add('MassiveLoginReply', [
+        (1, 'profile_progress', 'ProfileProgress'),
+        (2, 'medal_info', 'MedalInfo'),
+        (3, 'deck_list', 'DeckList'),
+        (4, 'profile_deck_limit', 'ProfileDeckLimit'),
+        (5, 'gold_balance', 'GoldBalance'),
+        (6, 'arcane_dust_balance', 'ArcaneDustBalance'),
+        (7, 'reward_progress', 'RewardProgress'),
+        (8, 'player_records', 'PlayerRecords'),
+        (9, 'card_backs', 'CardBacks'),
+        (10, 'special_event_timing', 'SpecialEventTiming[]')
     ])
 
     builder.build(globals(), __name__)
