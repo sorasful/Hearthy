@@ -15,14 +15,14 @@ class DummyServer(rpc.ServiceServer):
         super().__init__()
         self.service = rpc.Service('dummy')
         self.service.hval = hval
-        
+
     def _handle_packet(self, header, body):
         self.logger.warn('Ignoring packet for unknown service with hash 0x%08x. Header %s', self.service.hval, header)
 
 class ConnectService(rpcdef.ConnectService.Server):
     def __init__(self):
         super().__init__()
-        
+
     def Connect(self, req):
         import_id = []
         for i, hval in enumerate(req.BindRequest.ImportedServiceHash):
@@ -96,10 +96,10 @@ class AuthenticationServer(rpcdef.AuthenticationServer.Server):
         module_id = req.ModuleId
         module = self._id_to_module[module_id]
         module.on_message(req.Message)
-        
+
     def Logon(self, req):
         yield mtypes.BnetNoData()
-        
+
         self._auth_client.LogonQueueUpdate(
               Position=1,
               EstimatedTime=9223372036854775807,
@@ -108,7 +108,7 @@ class AuthenticationServer(rpcdef.AuthenticationServer.Server):
 
         #self.add_module(auth.ThumbprintModule())
         #self.add_module(auth.PasswordAuthenticator('waifu@blizzard.com', 'pass'))
-        
+
         self._auth_client.LogonUpdate(error_code=0)
         self._auth_client.LogonComplete(
             error_code=0,
@@ -175,7 +175,7 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
         elif request_type == 0xcd:
             update_login_request = pegasus_util.UpdateLogin.decode_buf(request_body)
             self.logger.info("Got update login request: %r", update_login_request)
-            
+
             update_login_response = pegasus_util.UpdateLoginComplete()
             return pegasus_util.to_client_response(update_login_response)
         elif request_type == pegasus_util.SetProgress.packet_id:
@@ -186,6 +186,14 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
                 value = 1, # SUCCESS
             )
             return pegasus_util.to_client_response(set_progress_response)
+        elif request_type == pegasus_util.CheckGameLicense.packet_id:
+            req = pegasus_util.CheckGameLicense.decode_buf(request_body)
+            self.logger.info("Got CheckGameLicense request: %r", req)
+            resp = pegasus_util.CheckLicensesResponse(
+                accountLevel = True,
+                success = True,
+            )
+            return pegasus_util.to_client_response(resp)
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 
@@ -199,7 +207,7 @@ class ClientHandler(rpc.RpcBroker):
         self._ep = ep
         self._splitter = SplitterBuf()
         self._send_buf = pipe.SimpleBuf()
-        
+
         ep.cb = self._ep_cb
 
         ep.want_pull(True)
