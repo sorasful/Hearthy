@@ -1,6 +1,6 @@
 import logging
 import time
-from hearthy.protocol import mtypes, pegasus_util, account
+from hearthy.protocol import mtypes, pegasus_util, account, enums
 from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
 from hearthy.bnet.decode import SplitterBuf
@@ -194,6 +194,19 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
                 success = True,
             )
             return pegasus_util.to_client_response(resp)
+        elif request_type == pegasus_util.CheckAccountLicenses.packet_id:
+            self.logger.info('Got CheckAccountLicense request')
+            resp = pegasus_util.CheckLicensesResponse(
+                accountLevel = True,
+                success = True
+            )
+            return pegasus_util.to_client_response(resp)
+        elif request_type == pegasus_util.GetAccountInfo.packet_id:
+            req = pegasus_util.GetAccountInfo.decode_buf(request_body)
+            code = req.request
+            self.logger.info('GetAccountInfo request for {} ({})'.format(
+                code,
+                enums.AccountInfoRequest.reverse.get(code, '???')))
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 

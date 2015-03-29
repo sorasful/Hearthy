@@ -23,10 +23,15 @@ def _anon():
         (2, 'progress', 'int64')
     ])
 
+    builder.add('CheckAccountLicenses', [])
     builder.add('CheckGameLicense', [])
     builder.add('CheckLicensesResponse', [
         (1, 'accountLevel', 'bool'),
         (2, 'success', 'bool'),
+    ])
+
+    builder.add('GetAccountInfo', [
+        (1, 'request', 'enum')
     ])
 
     builder.build(globals(), __name__)
@@ -39,7 +44,9 @@ UpdateLoginComplete.packet_id = 0x133
 SetProgress.packet_id = 230
 SetProgressResponse.packet_id = 0x128
 CheckGameLicense.packet_id = 276
+CheckAccountLicenses.packet_id = 267
 CheckLicensesResponse.packet_id = 277
+GetAccountInfo.packet_id = 0xc9
 
 def to_client_response(packet):
     buf = bytearray(1024)

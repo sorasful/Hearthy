@@ -337,3 +337,30 @@ GoldRewardState = _enum('GoldRewardState', [
     'INVALID', 'ELIGIBLE', 'WRONG_GAME_TYPE', 'ALREADY_CAPPED', 'BAD_RATING',
     'SHORT_GAME'
 ])
+
+AccountInfoRequest = _enum('AccountInfoRequest', [
+    ("ARCANE_DUST_BALANCE",0x11),
+    ("BOOSTER_TALLY",0x18),
+    ("BOOSTERS",6),
+    ("CAMPAIGN_INFO",11),
+    ("CARD_BACKS",7),
+    ("CARD_VALUES",15),
+    ("CLIENT_OPTIONS",14),
+    ("COLLECTION",3),
+    ("DECK_LIMIT",10),
+    ("DECK_LIST",2),
+    ("DISCONNECTED",0x10),
+    ("FEATURES",0x12),
+    ("GAMES_PLAYED",9),
+    ("GOLD_BALANCE",20),
+    ("HERO_XP",0x15),
+    ("LAST_LOGIN",1),
+    ("MASSIVE_LOGIN",0x17),
+    ("MEDAL_HISTORY",5),
+    ("MEDAL_INFO",4),
+    ("MOTD",13),
+    ("NOTICES",12),
+    ("PLAYER_RECORD",8),
+    ("PVP_QUEUE",0x16),
+    ("REWARD_PROGRESS",0x13)
+])
