@@ -139,6 +139,7 @@ CheckGameLicense.packet_id = 276
 CheckAccountLicenses.packet_id = 267
 CheckLicensesResponse.packet_id = 277
 GetAccountInfo.packet_id = 0xc9
+MassiveLoginReply.packet_id = 300
 
 def to_client_response(packet):
     buf = bytearray(1024)

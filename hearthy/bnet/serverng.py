@@ -1,6 +1,6 @@
 import logging
 import time
-from hearthy.protocol import mtypes, pegasus_util, account, enums
+from hearthy.protocol import mtypes, pegasus_util, pegasus_shared, account, enums
 from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
 from hearthy.bnet.decode import SplitterBuf
@@ -160,6 +160,66 @@ class AccountServiceServer(rpcdef.AccountService.Server):
             session_info=account.GameSessionInfo(start_time=int(time.time())))
         return resp
 
+MASSIVE_LOGIN_REPLY = pegasus_util.MassiveLoginReply(
+    profile_progress = pegasus_util.ProfileProgress(
+        progress=12,
+        best_forge=3,
+        last_forge=pegasus_shared.Date(
+            year=2002,
+            month=12,
+            day=31,
+            hours=12,
+            min=0,
+            sec=0
+        ),
+        display_banner=1,
+        adventure_options=[]
+    ),
+    medal_info = pegasus_util.MedalInfo(
+        season_wins=12,
+        stars=3,
+        streak=4,
+        star_level=1,
+        level_start=1,
+        level_end=10,
+        can_lose=True,
+        legend_rank=100
+    ),
+    deck_list = pegasus_util.DeckList(
+        decks=[]
+    ),
+    profile_deck_limit = pegasus_util.ProfileDeckLimit(
+        deck_limit=30
+    ),
+    gold_balance = pegasus_util.GoldBalance(
+        capped_balance=4123,
+        bonus_balance=2341,
+        cap=1234,
+        cap_warning=1111
+    ),
+    arcane_dust_balance = pegasus_util.ArcaneDustBalance(balance=99999),
+    reward_progress = pegasus_util.RewardProgress(
+        season_end=pegasus_shared.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+        wins_per_gold=10,
+        gold_per_reward=10,
+        max_gold_per_day=100,
+        season_number=1,
+        pack_id=1,
+        xp_solo_limit=1243,
+        max_hero_level=9,
+        next_quest_cancel=pegasus_shared.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+        event_timing_mod=1.123
+    ),
+    player_records = pegasus_util.PlayerRecords(
+        records=[]
+    ),
+    card_backs = pegasus_util.CardBacks(
+        default_card_back=1,
+        card_backs=[1,2,3]
+    ),
+    special_event_timing=[]
+)
+
 class GameUtilitiesServer(rpcdef.GameUtilities.Server):
     def process_client_request(self, req):
         blobval = req.attributes[0].value.blobval
@@ -207,6 +267,9 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
             self.logger.info('GetAccountInfo request for {} ({})'.format(
                 code,
                 enums.AccountInfoRequest.reverse.get(code, '???')))
+
+            if code == enums.AccountInfoRequest.MASSIVE_LOGIN:
+                return pegasus_util.to_client_response(MASSIVE_LOGIN_REPLY)
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 
