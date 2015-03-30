@@ -171,55 +171,58 @@ DUMMY_MEDAL_INFO = PegasusUtil_pb2.MedalInfo(
     can_lose=True,
     legend_rank=100
 )
-
+DUMMY_DECK_LIST = PegasusUtil_pb2.DeckList()
+DUMMY_REWARD_PROGRESS = PegasusUtil_pb2.RewardProgress(
+    season_end=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+    wins_per_gold=10,
+    gold_per_reward=10,
+    max_gold_per_day=100,
+    season_number=1,
+    pack_id=1,
+    xp_solo_limit=1243,
+    max_hero_level=9,
+    next_quest_cancel=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+    event_timing_mod=1.123
+)
+DUMMY_CARD_BACKS = PegasusUtil_pb2.CardBacks(
+    default_card_back=1,
+    card_backs=[1,2,3]
+)
+DUMMY_GOLD_BALANCE = PegasusUtil_pb2.GoldBalance(
+    capped_balance=4123,
+    bonus_balance=2341,
+    cap=1234,
+    cap_warning=1111
+)
+DUMMY_COLLECTION = PegasusUtil_pb2.Collection()
+DUMMY_PLAYER_RECORD = PegasusUtil_pb2.PlayerRecords()
+DUMMY_PLAYER_PROGRESS = PegasusUtil_pb2.ProfileProgress(
+    progress=12,
+    best_forge=3,
+    last_forge=PegasusShared_pb2.Date(
+        year=2002,
+        month=12,
+        day=31,
+        hours=12,
+        min=0,
+        sec=0
+    ),
+    display_banner=1,
+    adventure_options=[]
+)
+DUMMY_ARCANE_DUST_BALANCE = PegasusUtil_pb2.ArcaneDustBalance(balance=99999)
+DUMMY_DECK_LIMIT = PegasusUtil_pb2.ProfileDeckLimit(deck_limit=30)
+DUMMY_CLIENT_OPTIONS = PegasusUtil_pb2.ClientOptions()
 MASSIVE_LOGIN_REPLY = PegasusUtil_pb2.MassiveLoginReply(
-    profile_progress = PegasusUtil_pb2.ProfileProgress(
-        progress=12,
-        best_forge=3,
-        last_forge=PegasusShared_pb2.Date(
-            year=2002,
-            month=12,
-            day=31,
-            hours=12,
-            min=0,
-            sec=0
-        ),
-        display_banner=1,
-        adventure_options=[]
-    ),
+    profile_progress = DUMMY_PLAYER_PROGRESS,
     medal_info = DUMMY_MEDAL_INFO,
-    deck_list = PegasusUtil_pb2.DeckList(
-        decks=[]
-    ),
-    profile_deck_limit = PegasusUtil_pb2.ProfileDeckLimit(
-        deck_limit=30
-    ),
-    gold_balance = PegasusUtil_pb2.GoldBalance(
-        capped_balance=4123,
-        bonus_balance=2341,
-        cap=1234,
-        cap_warning=1111
-    ),
-    arcane_dust_balance = PegasusUtil_pb2.ArcaneDustBalance(balance=99999),
-    reward_progress = PegasusUtil_pb2.RewardProgress(
-        season_end=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
-        wins_per_gold=10,
-        gold_per_reward=10,
-        max_gold_per_day=100,
-        season_number=1,
-        pack_id=1,
-        xp_solo_limit=1243,
-        max_hero_level=9,
-        next_quest_cancel=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
-        event_timing_mod=1.123
-    ),
-    player_records = PegasusUtil_pb2.PlayerRecords(
-        records=[]
-    ),
-    card_backs = PegasusUtil_pb2.CardBacks(
-        default_card_back=1,
-        card_backs=[1,2,3]
-    ),
+    deck_list = DUMMY_DECK_LIST,
+    profile_deck_limit = DUMMY_DECK_LIMIT,
+    gold_balance = DUMMY_GOLD_BALANCE,
+    arcane_dust_balance = DUMMY_ARCANE_DUST_BALANCE,
+    reward_progress = DUMMY_REWARD_PROGRESS,
+    player_records = DUMMY_PLAYER_RECORD,
+    card_backs = DUMMY_CARD_BACKS,
     special_event_timing=[]
 )
 
@@ -293,6 +296,29 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
                 return pegasus_util.to_client_response_pb2(resp)
             elif req.request == PegasusUtil_pb2.GetAccountInfo.MEDAL_INFO:
                 return pegasus_util.to_client_response_pb2(DUMMY_MEDAL_INFO)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.DECK_LIST:
+                return pegasus_util.to_client_response_pb2(DUMMY_DECK_LIST)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.NOTICES:
+                notices = PegasusUtil_pb2.ProfileNotices()
+                return pegasus_util.to_client_response_pb2(notices)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.REWARD_PROGRESS:
+                return pegasus_util.to_client_response_pb2(DUMMY_REWARD_PROGRESS)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.CARD_BACKS:
+                return pegasus_util.to_client_response_pb2(DUMMY_CARD_BACKS)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.GOLD_BALANCE:
+                return pegasus_util.to_client_response_pb2(DUMMY_GOLD_BALANCE)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.PLAYER_RECORD:
+                return pegasus_util.to_client_response_pb2(DUMMY_PLAYER_RECORD)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.CAMPAIGN_INFO:
+                return pegasus_util.to_client_response_pb2(DUMMY_PLAYER_PROGRESS)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.CLIENT_OPTIONS:
+                return pegasus_util.to_client_response_pb2(DUMMY_CLIENT_OPTIONS)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.COLLECTION:
+                return pegasus_util.to_client_response_pb2(DUMMY_COLLECTION)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.DECK_LIMIT:
+                return pegasus_util.to_client_response_pb2(DUMMY_DECK_LIMIT)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.ARCANE_DUST_BALANCE:
+                return pegasus_util.to_client_response_pb2(DUMMY_ARCANE_DUST_BALANCE)
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 
