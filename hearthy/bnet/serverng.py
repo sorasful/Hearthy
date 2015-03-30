@@ -262,16 +262,21 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
                 success = True
             )
             return pegasus_util.to_client_response(resp)
+        elif request_type == PegasusUtil_pb2.ClientTracking.ID:
+            req = PegasusUtil_pb2.ClientTracking.FromString(request_body)
+            self.logger.info('Got ClientTracking utility request: %r', req)
+            # TODO: what to response?
+            return
         elif request_type == pegasus_util.GetAccountInfo.packet_id:
-            req = pegasus_util.GetAccountInfo.decode_buf(request_body)
-            code = req.request
-            self.logger.info('GetAccountInfo request for {} ({})'.format(
-                code,
-                enums.AccountInfoRequest(code)))
+            req = PegasusUtil_pb2.GetAccountInfo.FromString(request_body)
 
-            if code == AccountInfoRequest.MASSIVE_LOGIN:
+            self.logger.info('GetAccountInfo request for {} ({})'.format(
+                req.request,
+                PegasusUtil_pb2.GetAccountInfo.Request.Name(req.request)))
+
+            if req.request == PegasusUtil_pb2.GetAccountInfo.MASSIVE_LOGIN:
                 return pegasus_util.to_client_response_pb2(MASSIVE_LOGIN_REPLY)
-            elif code == BOOSTERS:
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.BOOSTERS:
                 resp = PegasusUtil_pb2.BoosterList()
                 return pegasus_util.to_client_response_pb2(resp)
 
