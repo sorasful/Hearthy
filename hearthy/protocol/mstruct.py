@@ -179,7 +179,7 @@ class MStruct:
                     getattr(ret, name).append(val)
             else:
                 if hasattr(ret, name):
-                    raise DecodeError('Duplicated slot for non-array type')
+                    raise DecodeError('Duplicated slot for non-array type {}'.format(ret))
                 setattr(ret, name, val)
         return ret
 
