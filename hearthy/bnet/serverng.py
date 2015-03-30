@@ -266,7 +266,7 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
             code = req.request
             self.logger.info('GetAccountInfo request for {} ({})'.format(
                 code,
-                enums.AccountInfoRequest.reverse.get(code, '???')))
+                enums.AccountInfoRequest(code)))
 
             if code == enums.AccountInfoRequest.MASSIVE_LOGIN:
                 return pegasus_util.to_client_response(MASSIVE_LOGIN_REPLY)

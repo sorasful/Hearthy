@@ -68,8 +68,7 @@ if __name__ == '__main__':
             print('Sequence: {0}'.format(n))
             hexdump(buf)
             for atype, buf in s.feed(buf):
-                print('\nFound packet {0}:{1}'.format(
-                    atype, PacketType.reverse.get(atype, '???')))
+                print('\nFound packet {0}:{1}'.format(atype, PacketType(atype)))
                 print('\nDecoded packet:')
                 print(decode_packet(atype, buf))
                 print()

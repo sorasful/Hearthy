@@ -90,7 +90,7 @@ class MutableView(EntityBase):
             ret += ('\n\ttag {1}:{2} {3} -> {4}'.format(
                             self,
                             key,
-                            GameTag.reverse.get(key, '?'),
+                            GameTag(key),
                             format_tag_value(key, oldval) if oldval else '(unset)',
                             format_tag_value(key, val)))
         return ret

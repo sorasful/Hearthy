@@ -47,10 +47,10 @@ _packet_type_id = dict((y,x) for x,y in _packet_type_map)
 def encode_packet(packet, buf, offset=0):
     end = packet.encode_buf(buf, offset + 8)
     packet_type = _packet_type_id.get(packet.__class__, None)
-    
+
     if packet_type is None:
         raise EncodeError('No packet type for class {0}'.format(packet.__class__))
-    
+
     buf[offset:offset+8] = struct.pack('<II', packet_type, end - offset - 8)
     return end
 

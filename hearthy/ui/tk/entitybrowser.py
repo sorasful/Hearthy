@@ -5,12 +5,13 @@ from hearthy.protocol import utils
 from hearthy.protocol.enums import GameTag
 from hearthy.tracker.entity import MutableView
 
-ALL_TAGS = sorted([x.capitalize() for x in GameTag.reverse.values()])
+
+ALL_TAGS = sorted(GameTag.__members__)
 
 class EntityFilter(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        
+
         self.tag = tkinter.StringVar()
         self.test = tkinter.StringVar()
         self.value = tkinter.StringVar()
@@ -74,7 +75,7 @@ class EntityFilter(ttk.Frame):
     def _on_remove(self):
         if self.cb is not None:
             self.cb(self, 'remove')
-    
+
     def _on_tag_change(self, val):
         tagval = self.tag.get()
         numeric = GameTag.__dict__.get(tagval.upper(), None)
@@ -127,7 +128,7 @@ class EntityTree:
         pre = str(eview.id) + '.'
         update_parent = False
 
-        
+
         in_tree = self._tree.exists(str(eview.id))
         does_pass = self._filter_fun(eview)
 
@@ -208,7 +209,7 @@ class EntityBrowser:
         browser_frame.grid(row=0, column=0, sticky='nsew')
 
         tree = EntityTree(browser_frame)
-        
+
         filter_frame = ttk.Labelframe(parent, text='Entity Filter')
         filter_frame.grid(row=1, column=0, sticky='nsew')
 
@@ -217,7 +218,7 @@ class EntityBrowser:
 
         button_frame = ttk.Frame(filter_frame)
         button_frame.pack(fill='x')
-        
+
         b_apply = ttk.Button(button_frame, text='Apply Filter', command=self._apply_filter)
         b_apply.pack(side='left', expand=True, fill='x')
 
@@ -235,7 +236,7 @@ class EntityBrowser:
         else:
             f = lambda x:True
         self._tree.set_filter(f)
-        
+
     def _remove_filter(self, ef, event):
         self._filters.remove(ef)
         ef.destroy()

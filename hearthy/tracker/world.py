@@ -71,7 +71,7 @@ class World:
 
     def _apply(self, transaction):
         self.cb(self, 'pre_apply', transaction)
-        
+
         for entity in transaction._e.values():
             if GameTag.TURN in entity._tags:
                 logger.info('== Turn {0} =='.format(entity._tags[GameTag.TURN]))
