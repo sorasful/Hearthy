@@ -161,6 +161,17 @@ class AccountServiceServer(rpcdef.AccountService.Server):
             session_info=account.GameSessionInfo(start_time=int(time.time())))
         return resp
 
+DUMMY_MEDAL_INFO = PegasusUtil_pb2.MedalInfo(
+    season_wins=12,
+    stars=3,
+    streak=4,
+    star_level=1,
+    level_start=1,
+    level_end=10,
+    can_lose=True,
+    legend_rank=100
+)
+
 MASSIVE_LOGIN_REPLY = PegasusUtil_pb2.MassiveLoginReply(
     profile_progress = PegasusUtil_pb2.ProfileProgress(
         progress=12,
@@ -176,16 +187,7 @@ MASSIVE_LOGIN_REPLY = PegasusUtil_pb2.MassiveLoginReply(
         display_banner=1,
         adventure_options=[]
     ),
-    medal_info = PegasusUtil_pb2.MedalInfo(
-        season_wins=12,
-        stars=3,
-        streak=4,
-        star_level=1,
-        level_start=1,
-        level_end=10,
-        can_lose=True,
-        legend_rank=100
-    ),
+    medal_info = DUMMY_MEDAL_INFO,
     deck_list = PegasusUtil_pb2.DeckList(
         decks=[]
     ),
@@ -279,6 +281,18 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
             elif req.request == PegasusUtil_pb2.GetAccountInfo.BOOSTERS:
                 resp = PegasusUtil_pb2.BoosterList()
                 return pegasus_util.to_client_response_pb2(resp)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.FEATURES:
+                resp = PegasusUtil_pb2.GuardianVars(
+                    tourney=True, practice=True, casual=True,
+                    forge=True, friendly=True, manager=True,
+                    crafting=True, hunter=True, mage=True, paladin=True,
+                    priest=True, rogue=True, shaman=True, warlock=True,
+                    warrior=True, showUserUI=1, store=False, battle_pay=False,
+                    buy_with_gold=False
+                )
+                return pegasus_util.to_client_response_pb2(resp)
+            elif req.request == PegasusUtil_pb2.GetAccountInfo.MEDAL_INFO:
+                return pegasus_util.to_client_response_pb2(DUMMY_MEDAL_INFO)
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 
