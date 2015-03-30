@@ -5,6 +5,7 @@ from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
 from hearthy.bnet.decode import SplitterBuf
 from hearthy.protocol.utils import hexdump
+from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 
 EPOCH = 0xAFFE
 SERVER_ID = mtypes.BnetProcessId(Label=0xABCD, Epoch=EPOCH)
@@ -160,11 +161,11 @@ class AccountServiceServer(rpcdef.AccountService.Server):
             session_info=account.GameSessionInfo(start_time=int(time.time())))
         return resp
 
-MASSIVE_LOGIN_REPLY = pegasus_util.MassiveLoginReply(
-    profile_progress = pegasus_util.ProfileProgress(
+MASSIVE_LOGIN_REPLY = PegasusUtil_pb2.MassiveLoginReply(
+    profile_progress = PegasusUtil_pb2.ProfileProgress(
         progress=12,
         best_forge=3,
-        last_forge=pegasus_shared.Date(
+        last_forge=PegasusShared_pb2.Date(
             year=2002,
             month=12,
             day=31,
@@ -175,7 +176,7 @@ MASSIVE_LOGIN_REPLY = pegasus_util.MassiveLoginReply(
         display_banner=1,
         adventure_options=[]
     ),
-    medal_info = pegasus_util.MedalInfo(
+    medal_info = PegasusUtil_pb2.MedalInfo(
         season_wins=12,
         stars=3,
         streak=4,
@@ -185,21 +186,21 @@ MASSIVE_LOGIN_REPLY = pegasus_util.MassiveLoginReply(
         can_lose=True,
         legend_rank=100
     ),
-    deck_list = pegasus_util.DeckList(
+    deck_list = PegasusUtil_pb2.DeckList(
         decks=[]
     ),
-    profile_deck_limit = pegasus_util.ProfileDeckLimit(
+    profile_deck_limit = PegasusUtil_pb2.ProfileDeckLimit(
         deck_limit=30
     ),
-    gold_balance = pegasus_util.GoldBalance(
+    gold_balance = PegasusUtil_pb2.GoldBalance(
         capped_balance=4123,
         bonus_balance=2341,
         cap=1234,
         cap_warning=1111
     ),
-    arcane_dust_balance = pegasus_util.ArcaneDustBalance(balance=99999),
-    reward_progress = pegasus_util.RewardProgress(
-        season_end=pegasus_shared.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+    arcane_dust_balance = PegasusUtil_pb2.ArcaneDustBalance(balance=99999),
+    reward_progress = PegasusUtil_pb2.RewardProgress(
+        season_end=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
         wins_per_gold=10,
         gold_per_reward=10,
         max_gold_per_day=100,
@@ -207,13 +208,13 @@ MASSIVE_LOGIN_REPLY = pegasus_util.MassiveLoginReply(
         pack_id=1,
         xp_solo_limit=1243,
         max_hero_level=9,
-        next_quest_cancel=pegasus_shared.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
+        next_quest_cancel=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
         event_timing_mod=1.123
     ),
-    player_records = pegasus_util.PlayerRecords(
+    player_records = PegasusUtil_pb2.PlayerRecords(
         records=[]
     ),
-    card_backs = pegasus_util.CardBacks(
+    card_backs = PegasusUtil_pb2.CardBacks(
         default_card_back=1,
         card_backs=[1,2,3]
     ),
@@ -268,13 +269,11 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
                 code,
                 enums.AccountInfoRequest(code)))
 
-            if code == enums.AccountInfoRequest.MASSIVE_LOGIN:
-                return pegasus_util.to_client_response(MASSIVE_LOGIN_REPLY)
-        elif request_type == pegasus_util.ClientTracking.packet_id:
-            #req = pegasus_util.ClientTracking.decode_buf(request_body)
-            self.logger.info("Got ClientTracking request")
-            # no response
-            return
+            if code == AccountInfoRequest.MASSIVE_LOGIN:
+                return pegasus_util.to_client_response_pb2(MASSIVE_LOGIN_REPLY)
+            elif code == BOOSTERS:
+                resp = PegasusUtil_pb2.BoosterList()
+                return pegasus_util.to_client_response_pb2(resp)
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 

@@ -146,6 +146,12 @@ CheckLicensesResponse.packet_id = 277
 GetAccountInfo.packet_id = 0xc9
 MassiveLoginReply.packet_id = 300
 
+def to_client_response_pb2(packet):
+    return game_utilities.ClientResponse(attributes=[
+        mtypes.Attribute(name='?', value=mtypes.BnetVariant(intval=packet.ID)),
+        mtypes.Attribute(name='?', value=mtypes.BnetVariant(blobval=packet.SerializeToString()))
+    ])
+
 def to_client_response(packet):
     buf = bytearray(1024)
     end = packet.encode_buf(buf)
