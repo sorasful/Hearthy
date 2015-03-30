@@ -113,6 +113,10 @@ def _anon():
         (3, 'end', 'uint64')
     ])
 
+    builder.add("ClientTracking", [
+        (1, "info", "string"),
+    ])
+
     builder.add('MassiveLoginReply', [
         (1, 'profile_progress', 'ProfileProgress'),
         (2, 'medal_info', 'MedalInfo'),
@@ -133,6 +137,7 @@ _anon()
 AssetsVersionResponse.packet_id = 0x130
 UpdateLogin.packet_id = 0xcd
 UpdateLoginComplete.packet_id = 0x133
+ClientTracking.packet_id = 228
 SetProgress.packet_id = 230
 SetProgressResponse.packet_id = 0x128
 CheckGameLicense.packet_id = 276

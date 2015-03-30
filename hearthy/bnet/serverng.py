@@ -270,6 +270,11 @@ class GameUtilitiesServer(rpcdef.GameUtilities.Server):
 
             if code == enums.AccountInfoRequest.MASSIVE_LOGIN:
                 return pegasus_util.to_client_response(MASSIVE_LOGIN_REPLY)
+        elif request_type == pegasus_util.ClientTracking.packet_id:
+            #req = pegasus_util.ClientTracking.decode_buf(request_body)
+            self.logger.info("Got ClientTracking request")
+            # no response
+            return
 
         self.logger.warn('Unhandled info packet with id=%d', request_type)
 
