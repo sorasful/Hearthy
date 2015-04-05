@@ -9,7 +9,6 @@ from hearthy.bnet.game_utilities_server import GameUtilitiesServer
 from hearthy.bnet.authentication_server import InsecureAuthenticationServer
 from hearthy.server.filedb import FileDb
 from hearthy.server.account_manager import AccountManager
-from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 
 EPOCH = 0xAFFE
 SERVER_ID = mtypes.BnetProcessId(Label=0xABCD, Epoch=EPOCH)

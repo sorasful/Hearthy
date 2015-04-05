@@ -1,6 +1,6 @@
 import logging
+import PegasusUtil_pb2, PegasusShared_pb2
 from hearthy.protocol.enums import GameOption
-from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 
 PRECON = PegasusUtil_pb2.DeckList()
 for i in [7,31,274,637,671,813,893,930,1066]:
