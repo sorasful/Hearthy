@@ -5,6 +5,10 @@ from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
 from hearthy.bnet.decode import SplitterBuf
 from hearthy.protocol.utils import hexdump
+from hearthy.bnet.game_utilities_server import GameUtilitiesServer
+from hearthy.bnet.authentication_server import InsecureAuthenticationServer
+from hearthy.server.filedb import FileDb
+from hearthy.server.account_manager import AccountManager
 from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 
 EPOCH = 0xAFFE
@@ -58,69 +62,6 @@ class ConnectService(rpcdef.ConnectService.Server):
 
         return resp
 
-class AuthenticationServer(rpcdef.AuthenticationServer.Server):
-    def __init__(self, auth_client):
-        super().__init__()
-        self._auth_client = auth_client
-
-        # Module Management
-        self._load_queue = []
-        self._id_to_module = {}
-
-    def send_message(self, from_module, message):
-        self._auth_client.ModuleMessage(ModuleId=from_module, Message=message)
-
-    def add_module(self, module):
-        self._load_queue.append(module)
-        module.manager = self
-        load_request = module.get_load_request()
-        self._auth_client.ModuleLoad(load_request)
-
-    def ModuleNotify(self, req):
-        if len(self._load_queue) == 0:
-            self.logger.warn('Received module notification but load queue is empty')
-        else:
-            module = self._load_queue.pop(0)
-            module_id = req.ModuleId
-            result = req.Result
-
-            # TODO: cleaner checks
-            assert result == 0
-            assert module_id not in self._id_to_module
-
-            self._id_to_module[module_id] = module
-            module.id = module_id
-            module.manager = self
-            module.on_loaded()
-
-    def ModuleMessage(self, req):
-        module_id = req.ModuleId
-        module = self._id_to_module[module_id]
-        module.on_message(req.Message)
-
-    def Logon(self, req):
-        yield mtypes.BnetNoData()
-
-        self._auth_client.LogonQueueUpdate(
-              Position=1,
-              EstimatedTime=9223372036854775807,
-              EtaDeviationInSec=0)
-        self._auth_client.LogonQueueEnd()
-
-        #self.add_module(auth.ThumbprintModule())
-        #self.add_module(auth.PasswordAuthenticator('waifu@blizzard.com', 'pass'))
-
-        self._auth_client.LogonUpdate(error_code=0)
-        self._auth_client.LogonComplete(
-            error_code=0,
-            account=mtypes.EntityId(high=0xdead, low=0xbeef),
-            game_account=[mtypes.EntityId(high=0x1CEB00DA, low=0xBAADF00D)],
-            email='email',
-            available_region=[0],
-            connected_region=0,
-            battle_tag='bt',
-            geoip_country='country')
-
 class PresenceServiceServer(rpcdef.PresenceService.Server):
     pass
 
@@ -161,177 +102,17 @@ class AccountServiceServer(rpcdef.AccountService.Server):
             session_info=account.GameSessionInfo(start_time=int(time.time())))
         return resp
 
-DUMMY_MEDAL_INFO = PegasusUtil_pb2.MedalInfo(
-    season_wins=12,
-    stars=3,
-    streak=4,
-    star_level=1,
-    level_start=1,
-    level_end=10,
-    can_lose=True,
-    legend_rank=100
-)
-DUMMY_DECK_LIST = PegasusUtil_pb2.DeckList()
-DUMMY_REWARD_PROGRESS = PegasusUtil_pb2.RewardProgress(
-    season_end=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
-    wins_per_gold=10,
-    gold_per_reward=10,
-    max_gold_per_day=100,
-    season_number=1,
-    pack_id=1,
-    xp_solo_limit=1243,
-    max_hero_level=9,
-    next_quest_cancel=PegasusShared_pb2.Date(year=2020,month=1,day=1,hours=12,min=0,sec=0),
-    event_timing_mod=1.123
-)
-DUMMY_CARD_BACKS = PegasusUtil_pb2.CardBacks(
-    default_card_back=1,
-    card_backs=[1,2,3]
-)
-DUMMY_GOLD_BALANCE = PegasusUtil_pb2.GoldBalance(
-    capped_balance=4123,
-    bonus_balance=2341,
-    cap=1234,
-    cap_warning=1111
-)
-DUMMY_COLLECTION = PegasusUtil_pb2.Collection()
-DUMMY_PLAYER_RECORD = PegasusUtil_pb2.PlayerRecords()
-DUMMY_PLAYER_PROGRESS = PegasusUtil_pb2.ProfileProgress(
-    progress=12,
-    best_forge=3,
-    last_forge=PegasusShared_pb2.Date(
-        year=2002,
-        month=12,
-        day=31,
-        hours=12,
-        min=0,
-        sec=0
-    ),
-    display_banner=1,
-    adventure_options=[]
-)
-DUMMY_ARCANE_DUST_BALANCE = PegasusUtil_pb2.ArcaneDustBalance(balance=99999)
-DUMMY_DECK_LIMIT = PegasusUtil_pb2.ProfileDeckLimit(deck_limit=30)
-DUMMY_CLIENT_OPTIONS = PegasusUtil_pb2.ClientOptions()
-MASSIVE_LOGIN_REPLY = PegasusUtil_pb2.MassiveLoginReply(
-    profile_progress = DUMMY_PLAYER_PROGRESS,
-    medal_info = DUMMY_MEDAL_INFO,
-    deck_list = DUMMY_DECK_LIST,
-    profile_deck_limit = DUMMY_DECK_LIMIT,
-    gold_balance = DUMMY_GOLD_BALANCE,
-    arcane_dust_balance = DUMMY_ARCANE_DUST_BALANCE,
-    reward_progress = DUMMY_REWARD_PROGRESS,
-    player_records = DUMMY_PLAYER_RECORD,
-    card_backs = DUMMY_CARD_BACKS,
-    special_event_timing=[]
-)
-
-class GameUtilitiesServer(rpcdef.GameUtilities.Server):
-    def process_client_request(self, req):
-        blobval = req.attributes[0].value.blobval
-
-        # decode request
-        request_type = blobval[0] | (blobval[1] << 8)
-        request_body = blobval[2:]
-
-        if request_type == 303: # request for assets version
-            assert len(request_body) == 0, "???"
-            assets_version = pegasus_util.AssetsVersionResponse(version=0)
-            return pegasus_util.to_client_response(assets_version)
-        elif request_type == 0xcd:
-            update_login_request = pegasus_util.UpdateLogin.decode_buf(request_body)
-            self.logger.info("Got update login request: %r", update_login_request)
-
-            update_login_response = pegasus_util.UpdateLoginComplete()
-            return pegasus_util.to_client_response(update_login_response)
-        elif request_type == pegasus_util.SetProgress.packet_id:
-            set_progress_request = pegasus_util.UpdateLogin.decode_buf(request_body)
-            self.logger.info("Got set progress request: %r", set_progress_request)
-
-            set_progress_response = pegasus_util.SetProgressResponse(
-                value = 1, # SUCCESS
-            )
-            return pegasus_util.to_client_response(set_progress_response)
-        elif request_type == pegasus_util.CheckGameLicense.packet_id:
-            req = pegasus_util.CheckGameLicense.decode_buf(request_body)
-            self.logger.info("Got CheckGameLicense request: %r", req)
-            resp = pegasus_util.CheckLicensesResponse(
-                accountLevel = True,
-                success = True,
-            )
-            return pegasus_util.to_client_response(resp)
-        elif request_type == pegasus_util.CheckAccountLicenses.packet_id:
-            self.logger.info('Got CheckAccountLicense request')
-            resp = pegasus_util.CheckLicensesResponse(
-                accountLevel = True,
-                success = True
-            )
-            return pegasus_util.to_client_response(resp)
-        elif request_type == PegasusUtil_pb2.ClientTracking.ID:
-            req = PegasusUtil_pb2.ClientTracking.FromString(request_body)
-            self.logger.info('Got ClientTracking utility request: %r', req)
-            # TODO: what to response?
-            return
-        elif request_type == pegasus_util.GetAccountInfo.packet_id:
-            req = PegasusUtil_pb2.GetAccountInfo.FromString(request_body)
-
-            self.logger.info('GetAccountInfo request for {} ({})'.format(
-                req.request,
-                PegasusUtil_pb2.GetAccountInfo.Request.Name(req.request)))
-
-            if req.request == PegasusUtil_pb2.GetAccountInfo.MASSIVE_LOGIN:
-                return pegasus_util.to_client_response_pb2(MASSIVE_LOGIN_REPLY)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.BOOSTERS:
-                resp = PegasusUtil_pb2.BoosterList()
-                return pegasus_util.to_client_response_pb2(resp)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.FEATURES:
-                resp = PegasusUtil_pb2.GuardianVars(
-                    tourney=True, practice=True, casual=True,
-                    forge=True, friendly=True, manager=True,
-                    crafting=True, hunter=True, mage=True, paladin=True,
-                    priest=True, rogue=True, shaman=True, warlock=True,
-                    warrior=True, showUserUI=1, store=False, battle_pay=False,
-                    buy_with_gold=False
-                )
-                return pegasus_util.to_client_response_pb2(resp)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.MEDAL_INFO:
-                return pegasus_util.to_client_response_pb2(DUMMY_MEDAL_INFO)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.DECK_LIST:
-                return pegasus_util.to_client_response_pb2(DUMMY_DECK_LIST)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.NOTICES:
-                notices = PegasusUtil_pb2.ProfileNotices()
-                return pegasus_util.to_client_response_pb2(notices)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.REWARD_PROGRESS:
-                return pegasus_util.to_client_response_pb2(DUMMY_REWARD_PROGRESS)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.CARD_BACKS:
-                return pegasus_util.to_client_response_pb2(DUMMY_CARD_BACKS)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.GOLD_BALANCE:
-                return pegasus_util.to_client_response_pb2(DUMMY_GOLD_BALANCE)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.PLAYER_RECORD:
-                return pegasus_util.to_client_response_pb2(DUMMY_PLAYER_RECORD)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.CAMPAIGN_INFO:
-                return pegasus_util.to_client_response_pb2(DUMMY_PLAYER_PROGRESS)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.CLIENT_OPTIONS:
-                return pegasus_util.to_client_response_pb2(DUMMY_CLIENT_OPTIONS)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.COLLECTION:
-                return pegasus_util.to_client_response_pb2(DUMMY_COLLECTION)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.DECK_LIMIT:
-                return pegasus_util.to_client_response_pb2(DUMMY_DECK_LIMIT)
-            elif req.request == PegasusUtil_pb2.GetAccountInfo.ARCANE_DUST_BALANCE:
-                return pegasus_util.to_client_response_pb2(DUMMY_ARCANE_DUST_BALANCE)
-
-        self.logger.warn('Unhandled info packet with id=%d', request_type)
-
 class ChannelInvitationServiceServer(rpcdef.ChannelInvitationService.Server):
     pass
 
 class ClientHandler(rpc.RpcBroker):
-    def __init__(self, server, ep):
+    def __init__(self, server, ep, db):
         super().__init__()
         self._server = server
         self._ep = ep
         self._splitter = SplitterBuf()
         self._send_buf = pipe.SimpleBuf()
+        self._db = db
 
         ep.cb = self._ep_cb
 
@@ -339,14 +120,25 @@ class ClientHandler(rpc.RpcBroker):
         ep.want_push(False)
 
         auth_client = rpcdef.AuthenticationClient.build_client_proxy()
+
+        auth_server = InsecureAuthenticationServer(
+            client_handler=self,
+            auth_client=self.add_import(auth_client),
+            account_manager=AccountManager(self._db)
+        )
+
         self.add_export(ConnectService())
-        self.add_export(AuthenticationServer(self.add_import(auth_client)))
+        self.add_export(auth_server)
         self.add_export(FriendsServiceServer())
         self.add_export(ChannelInvitationServiceServer())
         self.add_export(ResourcesServiceServer())
         self.add_export(AccountServiceServer())
         self.add_export(PresenceServiceServer())
-        self.add_export(GameUtilitiesServer())
+        self.add_export(GameUtilitiesServer(self))
+
+        # TODO: only create the services (except AuthenticationService) after login
+        # and provide the account object via the service constructor
+        self.account = None
 
     def send_data(self, buf):
         self._send_buf.append(buf)
@@ -368,19 +160,45 @@ class ClientHandler(rpc.RpcBroker):
             self.logger.info('Connection closed')
 
 class Server:
-    def __init__(self, listen):
+    def __init__(self, listen, db):
         provider = pipe.TcpEndpointProvider(listen)
         provider.cb = self._on_connection
+
+        self.db = db
 
     def _on_connection(self, provider, ev_type, ev_data):
         if ev_type == 'accepted':
             addr_orig, ep = ev_data
-            ClientHandler(self, ep)
+            ClientHandler(self, ep, self.db)
 
 if __name__ == '__main__':
     import asyncore
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    import argparse
+    from hearthy.server.filedb import FileDb
 
-    server = Server(('0.0.0.0', 52525))
+    parser = argparse.ArgumentParser(description='Starts the sever.')
+
+    parser.add_argument('--loglevel',
+                        choices=['DEBUG', 'INFO', 'WARNING',
+                                 'ERROR', 'CRITICAL'],
+                        default='INFO',
+                        help='Sets the verbosity of the log messages')
+
+    parser.add_argument('--port', type=int, default=52525,
+                        help='Port to listen on')
+
+    parser.add_argument('--host', default='0.0.0.0',
+                        help='Host to listen on')
+
+    parser.add_argument('--db', required=True,
+                        help='Path to the database')
+
+    args = parser.parse_args()
+
+
+    logging.basicConfig(level=getattr(logging, args.loglevel))
+
+    db = FileDb(args.db)
+    server = Server((args.host, args.port), db)
     asyncore.loop()
