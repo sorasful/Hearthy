@@ -1,4 +1,5 @@
 from hearthy.server.collection import Collection
+from hearthy.server.account_options import AccountOptions
 from hearthy.server.deck import Deck
 from hearthy.server.util import get_timestamp
 
@@ -13,6 +14,12 @@ class Account:
         self.uuid = uuid
 
         self.prefix = ['accounts', str(uuid)]
+
+        self.account_options = AccountOptions(self.db, self.prefix + ['options'])
+
+    @property
+    def options(self):
+        return self.account_options
 
     @property
     def balances(self):

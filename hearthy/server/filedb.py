@@ -14,6 +14,9 @@ class FileDb:
         self.encoding = encoding
         self.tmpdir = os.path.join(self.basedir, 'tmp')
 
+    def try_create_path(self, path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
     def get_path(self, key):
         # TODO: make sure all components are safe
         return os.path.join(self.basedir, *key)

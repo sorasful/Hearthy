@@ -1,4 +1,5 @@
 import logging
+from hearthy.protocol.enums import GameOption
 from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 
 PRECON = PegasusUtil_pb2.DeckList()
@@ -168,8 +169,13 @@ class AccountInfo:
 
     @_handles(PegasusUtil_pb2.GetAccountInfo.CLIENT_OPTIONS)
     def get_client_options(self):
-        # TODO: currently not implemented
-        return PegasusUtil_pb2.ClientOptions()
+        opts = PegasusUtil_pb2.ClientOptions()
+
+        for name, value in self.account.options:
+            opt = opts.options.add(index=GameOption[name])
+            setattr(opt, value['type'], value['payload'])
+
+        return opts
 
     @_handles(PegasusUtil_pb2.GetAccountInfo.COLLECTION)
     def get_collection(self):

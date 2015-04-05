@@ -3,6 +3,7 @@ from hearthy.bnet import rpcdef
 from hearthy.bnet.account_info import AccountInfo
 from hearthy.proto import PegasusUtil_pb2, PegasusShared_pb2
 from hearthy.protocol import game_utilities, mtypes
+from hearthy.protocol.enums import GameOption
 
 ASSETS_VERSION = 7553
 
@@ -29,6 +30,21 @@ def _handles(message_class):
     return regfun
 
 class GameUtilityHandlers:
+    @_handles(PegasusUtil_pb2.SetOptions)
+    def set_options(self, req):
+        for client_option in req.options:
+            # TODO: do we cover all option indexes this way?
+            name = GameOption(client_option.index).name
+
+            for i in ['as_bool', 'as_int32', 'as_int64', 'as_float', 'as_uint64']:
+                if client_option.HasField(i):
+                    self.client_handler.account.options[name] = {
+                        'payload': getattr(client_option, i),
+                        'index': client_option.index,
+                        'type': i
+                    }
+                    break
+
     @_handles(PegasusUtil_pb2.DeleteDeck)
     def delete_deck(self, req):
         self.client_handler.account.delete_deck(req.deck)
