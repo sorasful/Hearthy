@@ -479,7 +479,7 @@ class TrackWhat(IntEnum):
     TRACK_CM_HIDE_PREMIUMS_NOT_OWNED = 38
     TRACK_PLAY_FORGE_QUEUE = 39
 
-class GameOption:
+class GameOption(IntEnum):
     AI_MODE = 0x30
     BACKGROUND_SOUND = 20
     BUNDLE_JUST_PURCHASE_IN_HUB = 0x6c
