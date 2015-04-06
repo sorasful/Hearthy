@@ -3,9 +3,10 @@ import time
 from hearthy.protocol import mtypes, pegasus_util, pegasus_shared, account, enums
 from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
-from hearthy.bnet.decode import SplitterBuf
+from hearthy.bnet.splitter_buf import SplitterBuf
 from hearthy.protocol.utils import hexdump
 from hearthy.bnet.game_utilities_server import GameUtilitiesServer
+from hearthy.bnet.game_master_server import GameMasterServer
 from hearthy.bnet.authentication_server import InsecureAuthenticationServer
 from hearthy.server.filedb import FileDb
 from hearthy.server.account_manager import AccountManager

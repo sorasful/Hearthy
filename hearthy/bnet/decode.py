@@ -3,6 +3,7 @@ from hearthy.proxy import pipe
 from hearthy.protocol import mtypes, serialize
 from hearthy.protocol.utils import hexdump
 from hearthy.bnet import utils
+from bnet.protocol_1_pb2 import Header
 
 #
 # TODO: XXX: This file is not used anymore (expect for SplitterBuf)
@@ -28,7 +29,7 @@ class SplitterBuf(pipe.SimpleBuf):
             # read header
             if used < 2 + header_size:
                 return
-            header = self._header = mtypes.BnetPacketHeader.decode_buf(self.peek(header_size, 2))
+            header = self._header = Header.FromString(self.peek(header_size, 2))
 
         print(header)
         # read body
