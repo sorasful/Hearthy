@@ -120,6 +120,9 @@ class ClientHandler(rpc.RpcBroker):
         ep.want_push(False)
 
         auth_client = rpcdef.AuthenticationClient.build_client_proxy()
+        notification_client = rpcdef.NotificationListener.build_client_proxy()
+
+        self.add_import(notification_client)
 
         auth_server = InsecureAuthenticationServer(
             client_handler=self,
@@ -135,6 +138,7 @@ class ClientHandler(rpc.RpcBroker):
         self.add_export(AccountServiceServer())
         self.add_export(PresenceServiceServer())
         self.add_export(GameUtilitiesServer(self))
+        self.add_export(GameMasterServer(notification_client))
 
         # TODO: only create the services (except AuthenticationService) after login
         # and provide the account object via the service constructor

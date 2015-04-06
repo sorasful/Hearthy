@@ -1,11 +1,13 @@
 from hearthy.protocol import mtypes, game_utilities, account
 from hearthy.bnet import rpc
+from bnet.protocol import game_master_pb2, notification_pb2
+from bnet.protocol_0_pb2 import NoData
 
 NOT_IMPLEMENTED = None
 NO_RESPONSE = None
 
 NotificationListener = rpc.defservice('bnet.protocol.notification.NotificationListener', [
-    ('on_notification_received', 1, mtypes.BnetNotification, NO_RESPONSE)
+    ('on_notification_received', 1, notification_pb2.Notification, NO_RESPONSE)
 ])
 
 FriendsService = rpc.defservice('bnet.protocol.friends.FriendsService', [
@@ -53,17 +55,17 @@ ConnectService = rpc.defservice('bnet.protocol.connection.ConnectionService', [
 ])
 
 AuthenticationClient = rpc.defservice('bnet.protocol.authentication.AuthenticationClient', [
-    ('ModuleLoad',          1,  mtypes.BnetModuleLoadRequest, NO_RESPONSE), 
-    ('ModuleMessage',       2,  mtypes.BnetModuleMessageRequest, mtypes.BnetNoData), 
-    ('AccountSettings',     3,  NOT_IMPLEMENTED, NOT_IMPLEMENTED), 
-    ('ServerStateChange',   4,  NOT_IMPLEMENTED, NOT_IMPLEMENTED), 
-    ('LogonComplete',       5,  mtypes.BnetLogonResult, NOT_IMPLEMENTED), 
-    ('MemModuleLoad',       6,  NOT_IMPLEMENTED, NOT_IMPLEMENTED), 
-    ('LogonUpdate',         10, mtypes.BnetLogonUpdateRequest, NOT_IMPLEMENTED), 
-    ('VesionInfoUpdated',   11, NOT_IMPLEMENTED, NOT_IMPLEMENTED), 
+    ('ModuleLoad',          1,  mtypes.BnetModuleLoadRequest, NO_RESPONSE),
+    ('ModuleMessage',       2,  mtypes.BnetModuleMessageRequest, mtypes.BnetNoData),
+    ('AccountSettings',     3,  NOT_IMPLEMENTED, NOT_IMPLEMENTED),
+    ('ServerStateChange',   4,  NOT_IMPLEMENTED, NOT_IMPLEMENTED),
+    ('LogonComplete',       5,  mtypes.BnetLogonResult, NOT_IMPLEMENTED),
+    ('MemModuleLoad',       6,  NOT_IMPLEMENTED, NOT_IMPLEMENTED),
+    ('LogonUpdate',         10, mtypes.BnetLogonUpdateRequest, NOT_IMPLEMENTED),
+    ('VesionInfoUpdated',   11, NOT_IMPLEMENTED, NOT_IMPLEMENTED),
     ('LogonQueueUpdate',    12, mtypes.BnetLogonQueueUpdateRequest, NOT_IMPLEMENTED),
-    ('LogonQueueEnd',       13, mtypes.BnetNoData, NOT_IMPLEMENTED), 
-    ('GameAccountSelected', 14, NOT_IMPLEMENTED, NOT_IMPLEMENTED), 
+    ('LogonQueueEnd',       13, mtypes.BnetNoData, NOT_IMPLEMENTED),
+    ('GameAccountSelected', 14, NOT_IMPLEMENTED, NOT_IMPLEMENTED),
 ])
 
 GameUtilities = rpc.defservice('bnet.protocol.game_utilities.GameUtilities', [
@@ -74,4 +76,29 @@ GameUtilities = rpc.defservice('bnet.protocol.game_utilities.GameUtilities', [
     ('process_server_request', 6, NOT_IMPLEMENTED, NOT_IMPLEMENTED),
     ('notify_game_account_online', 7, NOT_IMPLEMENTED, NOT_IMPLEMENTED),
     ('notify_game_account_offline', 8, NOT_IMPLEMENTED, NOT_IMPLEMENTED),
+])
+
+GameMaster = rpc.defservice('bnet.protocol.game_master.GameMaster', [
+    ('join_game',            1,  game_master_pb2.JoinGameRequest,            game_master_pb2.JoinGameResponse),
+    ('list_factories',       2,  game_master_pb2.ListFactoriesRequest,       game_master_pb2.ListFactoriesResponse),
+    ('find_game',            3,  game_master_pb2.FindGameRequest,            game_master_pb2.FindGameResponse),
+    ('cancel_game_entry',    4,  game_master_pb2.CancelGameEntryRequest,     NoData),
+    ('game_ended',           5,  game_master_pb2.GameEndedNotification,      NO_RESPONSE),
+    ('player_left',          6,  game_master_pb2.PlayerLeftNotification,     NoData),
+    ('register_server',      7,  game_master_pb2.RegisterServerRequest,      NoData),
+    ('unregister_server',    8,  game_master_pb2.UnregisterServerRequest,    NO_RESPONSE),
+    ('register_utilities',   9,  game_master_pb2.RegisterUtilitiesRequest,   NoData),
+    ('unregister_utilities', 10, game_master_pb2.UnregisterUtilitiesRequest, NO_RESPONSE),
+    ('subscribe',            11, game_master_pb2.SubscribeRequest,           game_master_pb2.SubscribeResponse),
+    ('unsubscribe',          12, game_master_pb2.UnsubscribeRequest,         NO_RESPONSE),
+    ('change_game',          13, game_master_pb2.ChangeGameRequest,          NoData),
+    ('get_factory_info',     14, game_master_pb2.GetFactoryInfoRequest,      game_master_pb2.GetFactoryInfoResponse),
+    ('get_game_stats',       15, game_master_pb2.GetGameStatsRequest,        game_master_pb2.GetGameStatsResponse)
+])
+
+NotificationService = rpc.defservice('bnet.protocol.notification.NotificationService', [
+    ('send_notification', 1, notification_pb2.Notification,            NoData),
+    ('register_client',   2, notification_pb2.RegisterClientRequest,   NoData),
+    ('unregister_client', 3, notification_pb2.UnregisterClientRequest, NoData),
+    ('find_client',       4, notification_pb2.FindClientRequest,       notification_pb2.FindClientResponse)
 ])
