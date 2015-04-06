@@ -1,7 +1,7 @@
 from hearthy.protocol import mtypes, game_utilities, account
 from hearthy.bnet import rpc
-from bnet.protocol import game_master_pb2, notification_pb2
-from bnet.protocol_0_pb2 import NoData
+from hsproto.bnet.protocol import game_master_pb2, notification_pb2
+from hsproto.bnet.protocol_0_pb2 import NoData
 
 NOT_IMPLEMENTED = None
 NO_RESPONSE = None

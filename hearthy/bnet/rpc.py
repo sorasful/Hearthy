@@ -4,7 +4,7 @@ import types
 
 from hearthy.bnet import utils
 from hearthy.protocol import mtypes
-from bnet.protocol_1_pb2 import Header
+from hsproto.bnet.protocol_1_pb2 import Header
 
 class ServiceMethod:
     __slots__ = ['id', 'name', 'req', 'resp']

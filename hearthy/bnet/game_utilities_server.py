@@ -1,5 +1,5 @@
 import logging
-import PegasusUtil_pb2, PegasusShared_pb2
+from hsproto import PegasusUtil_pb2, PegasusShared_pb2
 from hearthy.bnet import rpcdef
 from hearthy.bnet.account_info import AccountInfo
 from hearthy.protocol import game_utilities, mtypes

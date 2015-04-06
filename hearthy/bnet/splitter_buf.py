@@ -1,5 +1,5 @@
 from hearthy.proxy import pipe
-from bnet.protocol_1_pb2 import Header
+from hsproto.bnet.protocol_1_pb2 import Header
 
 class SplitterBuf(pipe.SimpleBuf):
     def __init__(self):

@@ -1,5 +1,5 @@
 import logging
-import PegasusUtil_pb2, PegasusShared_pb2
+from hsproto import PegasusUtil_pb2, PegasusShared_pb2
 from hearthy.protocol.enums import GameOption
 
 PRECON = PegasusUtil_pb2.DeckList()

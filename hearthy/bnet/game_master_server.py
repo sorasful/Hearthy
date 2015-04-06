@@ -1,8 +1,8 @@
 from hearthy.bnet.rpcdef import GameMaster
-from bnet.protocol import game_master_pb2
-from bnet.protocol.game_master_pb2 import ConnectInfo
-from bnet.protocol.attribute_pb2 import Attribute, Variant
-from bnet.protocol_0_pb2 import EntityId
+from hsproto.bnet.protocol import game_master_pb2
+from hsproto.bnet.protocol.game_master_pb2 import ConnectInfo
+from hsproto.bnet.protocol.attribute_pb2 import Attribute, Variant
+from hsproto.bnet.protocol_0_pb2 import EntityId
 
 class GameMasterServer(GameMaster.Server):
     def __init__(self, notification_client):
