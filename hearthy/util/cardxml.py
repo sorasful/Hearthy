@@ -18,41 +18,14 @@ def assert_tag(el, tag_name):
     if el.tag != tag_name:
         raise TagMismatch(tag_name, el.tag)
 
-def parse_carddefs(name):
-    tree = ET.parse(name)
-    root = tree.getroot()
+def parse_cardentity(el_entity):
+    assert_tag(el_entity, 'Entity')
 
-    assert_tag(root, 'CardDefs')
-    cards = []
-
-    for el_entity in root:
-        assert_tag(el_entity, 'Entity')
-        card_id = el_entity.get('CardID')
-
-        if card_id is None:
-            raise CardxmlExcpetion('Got entity without CardID attribute')
-
-        for el_tag in el_entity:
-            if el_tag.tag == 'Tag' and el_tag.get('enumID') == '185':
-                cards.append(Card(card_id, el_tag.text))
-                break
-
-    return cards
-
-def parse_cardxml(name):
-    tree = ET.parse(name)
-    root = tree.getroot()
-
-    if root.tag != 'Entity':
-        raise CardxmlException('Expected tag {0} but got {1}'.format('Entity', root.tag))
-
-    cardid = root.get('CardID')
+    cardid = el_entity.get('CardID')
     if cardid is None:
         raise CardxmlException('Entity tag has no CardID attribute')
 
-    cardname = None
-
-    for element in root:
+    for element in el_entity:
         tag = element.tag
         if tag == 'Tag':
             name = element.get('name')
@@ -61,11 +34,18 @@ def parse_cardxml(name):
                 if cardname_el is None:
                     raise CardxmlException('No "enUS" child find in "CardName" tag')
                 cardname = cardname_el.text
-
-    if cardname is None:
-        raise Exception('Could not find the cardname')
+                break
+    else:
+        raise CardxmlException('Could not find the cardname')
 
     return Card(cardid, cardname)
+
+def parse_carddefs(name):
+    tree = ET.parse(name)
+    root = tree.getroot()
+
+    assert_tag(root, 'CardDefs')
+    return [parse_cardentity(el_entity) for el_entity in root]
 
 def write_db(cards, f):
     print('_cards = [', file=f)
@@ -84,7 +64,8 @@ def parse_cardxml_dir(dirname):
         fullname = os.path.join(dirname, name)
         print('Parsing {0}'.format(fullname))
 
-        l.append(parse_cardxml(fullname))
+        tree = ET.parse(name)
+        l.append(parse_cardentity(tree.getroot()))
     return l
 
 if __name__ == '__main__':
