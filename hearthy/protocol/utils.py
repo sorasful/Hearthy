@@ -17,6 +17,12 @@ def hexdump(src, length=16, sep='.', file=sys.stdout):
         lines.append('{0:08x}:  {2:{1}}  |{3}|'.format(c, length*3-1, shex, printable))
     print('\n'.join(lines), file=file)
 
+def format_tag_name(tag_id):
+    try:
+        return GameTag(tag_id).name
+    except ValueError:
+        return 'TAG_{0:d}'.format(tag_id)
+
 _gametag_to_enum = {
     GameTag.ZONE: Zone,
     GameTag.CARDTYPE: CardType,
