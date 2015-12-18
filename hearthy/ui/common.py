@@ -1,5 +1,7 @@
 import threading
 import queue
+import sys
+import traceback
 
 from hearthy.datasource import hcapng
 from hearthy.protocol.utils import Splitter
@@ -46,7 +48,8 @@ class AsyncLogGenerator:
                 try:
                     for packet in conns[event.stream_id].feed(event.who, event.data):
                         yield (event.stream_id, ('packet', packet, event.who, ts))
-                except Exception as e:
+                except Exception:
+                    e = traceback.format_exception(*sys.exc_info())
                     del conns[event.stream_id]
                     yield (event.stream_id, ('exception', e))
         

@@ -40,6 +40,12 @@ class Application(ttk.Frame):
             self._streams.on_close(stream_id, *event[1:])
         elif event[0] == 'basets':
             self._streams.on_basets(event[1]*1000)
+        elif event[0] == 'exception':
+            ex, = event[1:]
+            logging.error(
+                    'Exception while parsing event; data will be incomplete\n%s',
+                    ''.join(ex).rstrip('\n')
+                    )
 
 if __name__ == '__main__':
     import sys
