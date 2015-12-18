@@ -40,7 +40,7 @@ class EntityBase:
 
         zone = self[GameTag.ZONE]
         if zone:
-            where = enums.Zone.reverse[zone].capitalize()
+            where = enums.Zone(zone).name.capitalize()
         else:
             where = '?'
 

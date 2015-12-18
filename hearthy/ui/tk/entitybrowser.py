@@ -45,21 +45,16 @@ class EntityFilter(ttk.Frame):
         test = self.test.get()
         value = self.value.get()
 
-        tag = GameTag.__dict__.get(tag.upper(), tag)
-        try:
-            tag = int(tag)
-        except ValueError:
-            print('Err: {0!r} is not numeric'.format(tag))
-            return
+        tag_id = int(getattr(GameTag, tag))
 
         if test == 'Exists':
-            return '(x[{0}] is not None)'.format(tag)
+            return '(x[{0}] is not None)'.format(tag_id)
         elif test == 'Not Exists':
-            return '(x[{0}] is None)'.format(tag)
+            return '(x[{0}] is None)'.format(tag_id)
 
-        enum = utils._gametag_to_enum.get(tag, None)
+        enum = utils._gametag_to_enum.get(tag_id, None)
         if enum is not None:
-            value = enum.__dict__.get(value.upper(), value)
+            value = getattr(enum, value.upper(), value)
 
         try:
             value = int(value)
@@ -68,26 +63,25 @@ class EntityFilter(ttk.Frame):
             return
 
         if test == 'Equals':
-            return '(x[{0}] == {1})'.format(tag, value)
+            return '(x[{0}] == {1})'.format(tag_id, value)
         elif test == 'Not Equals':
-            return '(x[{0}] != {1})'.format(tag, value)
+            return '(x[{0}] != {1})'.format(tag_id, value)
 
     def _on_remove(self):
         if self.cb is not None:
             self.cb(self, 'remove')
 
-    def _on_tag_change(self, val):
-        tagval = self.tag.get()
-        numeric = GameTag.__dict__.get(tagval.upper(), None)
+    def _on_tag_change(self, event):
+        tag = self.tag.get()
+        tag_id = int(getattr(GameTag, tag))
 
-        if numeric is None:
-            return
-
-        enum = utils._gametag_to_enum.get(numeric, None)
+        enum = utils._gametag_to_enum.get(tag_id, None)
         if enum is None:
-            return
+            values = []
+        else:
+            values = sorted(val.name.capitalize() for val in enum)
 
-        self._fvalue['values'] = sorted([x.capitalize() for x in enum.reverse.values()])
+        self._fvalue['values'] = values
 
 class EntityTree:
     def __init__(self, container):
@@ -121,7 +115,7 @@ class EntityTree:
         for tag, value in entity._tags.items():
             self._tree.insert(node, 'end', pre + str(tag),
                               text=str(tag),
-                              value=(GameTag.reverse.get(tag, ''),
+                              value=(utils.format_tag_name(tag),
                                      utils.format_tag_value(tag, value)))
 
     def _change_entity(self, eview):
