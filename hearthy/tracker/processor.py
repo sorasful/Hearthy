@@ -1,8 +1,7 @@
 import logging
 from hearthy.protocol import mtypes
-from hearthy.protocol.enums import GameTag
 from hearthy.tracker.world import World
-from hearthy.protocol.utils import format_tag_value
+from hearthy.protocol.utils import format_tag_name, format_tag_value
 from hearthy.tracker.entity import Entity, TAG_CUSTOM_NAME, TAG_POWER_NAME
 
 logger = logging.getLogger(__name__)
@@ -56,7 +55,7 @@ class Processor:
             # logging
             logger.info('Adding new entity: {0}'.format(new_entity))
             logger.debug('With tags: \n' + '\n'.join(
-                '\ttag {0}:{1} {2}'.format(tag_id, GameTag(tag_id),
+                '\ttag {0}:{1} {2}'.format(tag_id, format_tag_name(tag_id),
                                           format_tag_value(tag_id, tag_val))
                 for tag_id, tag_val in taglist))
         if hasattr(power, 'ShowEntity'):
@@ -76,7 +75,7 @@ class Processor:
 
             logger.info('Tag change for {0}: {1} from {2} to {3}'.format(
                 Entity.__str__(e),
-                GameTag(change.Tag),
+                format_tag_name(change.Tag),
                 format_tag_value(change.Tag, e[change.Tag]) if e[change.Tag] is not None else '(unset)',
                 format_tag_value(change.Tag, change.Value)))
 
