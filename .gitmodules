@@ -1,0 +1,3 @@
+[submodule "hs-data"]
+	path = hs-data
+	url = https://github.com/HearthSim/hs-data.git
