@@ -2,10 +2,46 @@
 Hearthstone Protocol Decoder.
 """
 
+from enum import IntEnum
 import struct
 from hearthy.protocol import mtypes
-from hearthy.protocol.enums import PacketType
 from hearthy.exceptions import DecodeError, EncodeError
+
+class PacketType(IntEnum):
+    GET_GAME_STATE = 1
+    CHOOSE_OPTION = 2
+    CHOOSE_ENTITIES = 3
+    PRE_CAST = 4
+    DEBUG_MESSAGE = 5
+    CLIENT_PACKET = 6
+    START_GAME_STATE = 7
+    FINISH_GAME_STATE = 8
+    TURN_TIMER = 9
+    NACK_OPTION = 10
+    GIVE_UP = 11
+    GAME_CANCELLED = 12
+    FORCED_ENTITY_CHOICE = 13
+    ALL_OPTIONS = 14
+    USER_UI = 15
+    GAME_SETUP = 16
+    ENTITY_CHOICE = 17
+    PRE_LOAD = 18
+    POWER_HISTORY = 19
+    NOTIFICATION = 21
+    SPECTATOR_HANDSHAKE = 22
+    SERVER_RESULT = 23
+    SPECTATOR_NOTIFY = 24
+    INVITE_TO_SPECTATE = 25
+    REMOVE_SPECTATORS = 26
+
+    AUTO_LOGIN = 103
+    BEGIN_PLAYING = 113
+    DEBUG_CONSOLE_COMMAND = 123
+    DEBUG_CONSOLE_RESPONSE = 124
+    GAME_STARTING = 114
+    PING = 115
+    PONG = 116
+    AURORA_HANDSHAKE = 168
 
 _packet_type_map = [
     (PacketType.POWER_HISTORY, mtypes.PowerHistory),

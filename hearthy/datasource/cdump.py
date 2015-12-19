@@ -1,7 +1,6 @@
 import re
-from ..protocol.decoder import decode_packet
+from ..protocol.decoder import decode_packet, PacketType
 from ..protocol.utils import hexdump, Splitter
-from ..protocol.enums import PacketType
 
 READ_BUFSIZE = 16 * 1024
 
