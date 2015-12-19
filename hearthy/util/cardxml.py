@@ -48,10 +48,10 @@ def parse_carddefs(name):
     return [parse_cardentity(el_entity) for el_entity in root]
 
 def write_db(cards, f):
-    print('_cards = [', file=f)
+    print('cards = {', file=f)
     for card in cards:
-        print('    ({0!r},{1!r}),'.format(card.id, card.name), file=f)
-    print(']', file=f)
+        print('    {0!r}: {1!r},'.format(card.id, card.name), file=f)
+    print('}', file=f)
 
 def parse_cardxml_dir(dirname):
     l = []
