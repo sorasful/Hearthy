@@ -1,8 +1,9 @@
 import tkinter
 from tkinter import ttk
 
+from hearthstone.enums import GameTag
+
 from hearthy.protocol import utils
-from hearthy.protocol.enums import GameTag
 from hearthy.tracker.entity import MutableView
 
 

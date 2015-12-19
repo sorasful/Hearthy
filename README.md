@@ -2,8 +2,23 @@
 Hearthy is a decoder for the network protocol used by [Hearthstone](http://us.battle.net/hearthstone/en/).
 This project is still in early stages of development. Only the game protocol has been implemented so far.
 
+## Requirements ##
 
-## UI #
+- [Hearthstone Python library](https://github.com/HearthSim/python-hearthstone)
+
+The easiest way to get all the dependencies is to use virtualenvwrapper:
+
+```sh
+mkvirtualenv -r requirements.txt -p `which python3` hearthy
+```
+
+To return to this virtualenv later, run:
+
+```sh
+workon hearthy
+```
+
+## UI ##
 Some basic UI tools for exploring protocol dumps are provided.
 ![tk ui](screenshots/streamview.png?raw=true)
 ![tk ui](screenshots/entitybrowser.png?raw=true)

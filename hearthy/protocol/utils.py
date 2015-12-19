@@ -1,8 +1,9 @@
 import sys
 import struct
 
+from hearthstone.enums import *
+
 from hearthy import exceptions
-from hearthy.protocol.enums import *
 
 # 16K ought to be enough for anybody :)
 MAX_BUF = 16 * 1024
@@ -28,10 +29,10 @@ _gametag_to_enum = {
     GameTag.CARDTYPE: CardType,
     GameTag.STEP: Step,
     GameTag.NEXT_STEP: Step,
-    GameTag.RARITY: CardRarity,
+    GameTag.RARITY: Rarity,
     GameTag.PLAYSTATE: PlayState,
-    GameTag.MULLIGAN_STATE: MulliganState,
-    GameTag.STATE: TagState,
+    GameTag.MULLIGAN_STATE: Mulligan,
+    GameTag.STATE: State,
     GameTag.FACTION: Faction,
     GameTag.CARDRACE: Race,
     GameTag.CARD_SET: CardSet,

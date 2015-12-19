@@ -1,6 +1,6 @@
 import logging
+from hearthstone.enums import GameTag
 from hearthy import exceptions
-from hearthy.protocol.enums import GameTag
 from hearthy.protocol.utils import format_tag_value
 from hearthy.tracker.entity import Entity, MutableEntity, MutableView
 

@@ -1,5 +1,6 @@
-from hearthy.protocol import enums
-from hearthy.protocol.enums import GameTag
+from hearthstone import enums
+from hearthstone.enums import GameTag
+
 from hearthy.protocol.utils import format_tag_value
 from hearthy.exceptions import CardNotFound
 from hearthy.db import cards

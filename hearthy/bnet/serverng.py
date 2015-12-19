@@ -1,6 +1,6 @@
 import logging
 import time
-from hearthy.protocol import mtypes, pegasus_util, pegasus_shared, account, enums
+from hearthy.protocol import mtypes, pegasus_util, pegasus_shared, account
 from hearthy.bnet import rpcdef, rpc, utils
 from hearthy.proxy import pipe
 from hearthy.bnet.splitter_buf import SplitterBuf

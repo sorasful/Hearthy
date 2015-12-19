@@ -1,7 +1,9 @@
 import asyncore
 
+from hearthstone import enums
+
 from hearthy.proxy import intercept
-from hearthy.protocol import mtypes, enums
+from hearthy.protocol import mtypes
 
 class SquirrelHandler(intercept.InterceptHandler):
     def __init__(self, use_premium=False):
