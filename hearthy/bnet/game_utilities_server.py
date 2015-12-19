@@ -1,9 +1,8 @@
 import logging
 from hsproto import PegasusUtil_pb2, PegasusShared_pb2
 from hearthy.bnet import rpcdef
-from hearthy.bnet.account_info import AccountInfo
+from hearthy.bnet.account_info import AccountInfo, GameOption
 from hearthy.protocol import game_utilities, mtypes
-from hearthy.protocol.enums import GameOption
 
 ASSETS_VERSION = 7553
 
