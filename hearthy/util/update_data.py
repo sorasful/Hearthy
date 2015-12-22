@@ -1,4 +1,4 @@
-from .cardxml import parse_carddefs, write_db
+from hearthstone import cardxml
 
 import os
 import subprocess
@@ -12,6 +12,12 @@ def capture_stdout(*args, **kvargs):
         return stdout_data.decode('utf8').rstrip('\n')
     else:
         raise OSError('Subprocess returned {0}'.format(proc.returncode))
+
+def write_db(cards, f):
+    print('cards = {', file=f)
+    for id_, card in sorted(cards.items()):
+        print('    {0!r}: {1!r},'.format(card.id, card.name), file=f)
+    print('}', file=f)
 
 def update_cards():
     """Updates the cards definition using the XML data from the hs-data repo.
@@ -27,7 +33,7 @@ def update_cards():
     comment = 'Generated from {0} (commit {1})'.format(url, commit[:10])
 
     # Read card data.
-    cards = parse_carddefs('hs-data/CardDefs.xml')
+    cards, xml_ = cardxml.load('hs-data/CardDefs.xml')
 
     # Rewrite the 'carddefs' module.
     with open('hearthy/db/carddefs.py', 'w') as f:
