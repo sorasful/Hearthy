@@ -1,1 +1,2 @@
 -e git+https://github.com/HearthSim/python-hearthstone.git#egg=hearthstone
+py3-protobuffers>=3.0.0a4

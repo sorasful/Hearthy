@@ -4,9 +4,18 @@ This project is still in early stages of development. Only the game protocol has
 
 ## Requirements ##
 
-- [Hearthstone Python library](https://github.com/HearthSim/python-hearthstone)
+System requirements:
 
-The easiest way to get all the dependencies is to use virtualenvwrapper:
+- [Python](https://www.python.org/), version 3.4 or higher
+- [Protocol Buffers](https://developers.google.com/protocol-buffers/) compiler (protoc)
+- [Git](https://git-scm.com/)
+
+Python requirements:
+
+- [Hearthstone Python library](https://github.com/HearthSim/python-hearthstone)
+- [Protocol Buffers library](https://developers.google.com/protocol-buffers/)
+
+The easiest way to install the Python requirements is to use virtualenvwrapper:
 
 ```sh
 mkvirtualenv -r requirements.txt -p `which python3` hearthy
@@ -18,12 +27,13 @@ To return to this virtualenv later, run:
 workon hearthy
 ```
 
-The [card database](https://github.com/HearthSim/hs-data) is kept in a separate repository, which is included into Hearthy via a Git submodule. To initialize and clone all submodules, run these commands after cloning Hearthy:
+The [card database](https://github.com/HearthSim/hs-data) and the [protocol definitions](https://github.com/HearthSim/hs-proto) are kept in separate repositories, which are included into Hearthy via a Git submodules. To fetch or update this external data, run the bootstrap script:
 
 ```sh
-git submodule init
-git submodule update
+./bootstrap.sh
 ```
+
+You can re-run the bootstrap script to update the submodules and regenerate the protocol buffer code.
 
 ## UI ##
 Some basic UI tools for exploring protocol dumps are provided.
