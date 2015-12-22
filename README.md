@@ -18,6 +18,13 @@ To return to this virtualenv later, run:
 workon hearthy
 ```
 
+The [card database](https://github.com/HearthSim/hs-data) is kept in a separate repository, which is included into Hearthy via a Git submodule. To initialize and clone all submodules, run these commands after cloning Hearthy:
+
+```sh
+git submodule init
+git submodule update
+```
+
 ## UI ##
 Some basic UI tools for exploring protocol dumps are provided.
 ![tk ui](screenshots/streamview.png?raw=true)

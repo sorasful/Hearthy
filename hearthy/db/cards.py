@@ -1,5 +1,13 @@
+from hearthstone import cardxml
+
 from hearthy.exceptions import CardNotFound
-from .carddefs import cards as _id_to_card
+
+
+def _build_card_map():
+    cards, xml_ = cardxml.load('hs-data/CardDefs.xml')
+    return {card_id: card.name for card_id, card in cards.items()}
+
+_id_to_card = _build_card_map()
 
 def get_by_id(cardid):
     try:
