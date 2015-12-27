@@ -70,7 +70,9 @@ class World:
         return WorldTransaction(self)
 
     def _apply(self, transaction):
-        self.cb(self, 'pre_apply', transaction)
+        cb = self.cb
+        if cb is not None:
+            cb(self, 'pre_apply', transaction)
 
         for entity in transaction._e.values():
             if GameTag.TURN in entity._tags:
