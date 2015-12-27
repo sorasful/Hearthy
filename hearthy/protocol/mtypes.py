@@ -125,7 +125,8 @@ _deftype('EntityChoice', [
     (4, 'CountMin',    'int32'),
     (5, 'CountMax',    'int32'),
     (6, 'Entities',    'int32[]'),
-    (7, 'SourceField', 'int32')
+    (7, 'SourceField', 'int32'),
+    (8, 'PlayerId',    'int32')
 ])
 
 _deftype('PowerHistoryCreateGame', [
@@ -205,7 +206,8 @@ _deftype('MouseInfo', [
 
 _deftype('UserUI', [
     (1, 'MouseInfo', 'MouseInfo'),
-    (2, 'Emote',     'int')
+    (2, 'Emote',     'int'),
+    (3, 'PlayerId',  'int32')
 ])
 
 _deftype('TurnTimer', [
@@ -253,8 +255,8 @@ _deftype('InviteToSpectate', [
 ])
 
 _deftype('ForcedEntityChoice', [
-    (1, 'Id', 'int32'),
-    (2, 'Entities', 'int32')
+    (3, 'ChooseEntities', 'ChooseEntities'),
+    (4, 'PlayerId', 'int32')
 ])
 
 _deftype('AllOptions', [
