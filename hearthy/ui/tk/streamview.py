@@ -1,6 +1,21 @@
 import tkinter
 from tkinter import ttk
-from hearthy.protocol.mstruct import MStruct
+
+def _append_node(tree, node, key, value):
+    def add_sub(elements, summary=None):
+        if summary is None:
+            summary = '({0} element{1})'.format(len(elements), '' if len(elements) == 1 else 's')
+        subnode = tree.insert(node, 'end', text=key, value=(summary, ''))
+        for subkey, subval in elements:
+            _append_node(tree, subnode, subkey, subval)
+    if isinstance(value, str):
+        tree.insert(node, 'end', text=key, value=(value, ''))
+    elif isinstance(value, int):
+        tree.insert(node, 'end', text=key, value=(value, ''))
+    elif hasattr(value, 'ListFields'):
+        add_sub([(d.name, v) for d, v in value.ListFields()], value.__class__.__name__)
+    else:
+        add_sub([('[{0}]'.format(i), value[i]) for i in range(len(value))])
 
 class StreamView:
     def __init__(self, stream_id, start):
@@ -43,36 +58,17 @@ class StreamView:
 
         self._tree = tree
 
-    def _append_node(self, tree, node, key, value):
-        if isinstance(value, str):
-            tree.insert(node, 'end', text=key, value=(value, ''))
-        elif isinstance(value, int):
-            tree.insert(node, 'end', text=key, value=(value, ''))
-        elif isinstance(value, list):
-            subnode = tree.insert(node, 'end', text=key, value=('{0} Element{1}'.format(len(value), '' if len(value) == 1 else 's'), ''))
-            for i, entry in enumerate(value):
-                self._append_node(tree, subnode, '[{0}]'.format(i), entry)
-        elif isinstance(value, MStruct):
-            subnode = tree.insert(node, 'end', text=key, value=(value.__class__.__name__, ''))
-            for slot in value.__slots__:
-                if not hasattr(value, slot):
-                    continue
-                slotvalue = getattr(value, slot)
-
-                self._append_node(tree, subnode, slot, slotvalue)
-
     def process_packet(self, packet, who, ts):
         name = packet.__class__.__name__
         time = '{0:0.2f}s'.format((ts-self._start)/1000)
         
-        node = self._tree.insert('', 'end',
-                                 text='Packet {0}'.format(self._n_packets),
-                                 value=(name, time),
-                                 tags=(who,))
+        tree = self._tree
+        node = tree.insert(
+                '', 'end',
+                text='Packet {0}'.format(self._n_packets),
+                value=(name, time),
+                tags=(who,))
         self._n_packets += 1
 
-        for slot in packet.__slots__:
-            if not hasattr(packet, slot):
-                continue
-            value = getattr(packet, slot)
-            self._append_node(self._tree, node, slot, value)
+        for desc, subval in packet.ListFields():
+            _append_node(tree, node, desc.name, subval)

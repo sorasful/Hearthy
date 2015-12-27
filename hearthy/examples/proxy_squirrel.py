@@ -1,9 +1,9 @@
 import asyncore
 
-from hearthstone import enums
+from hearthstone.enums import GameTag
 
 from hearthy.proxy import intercept
-from hearthy.protocol import mtypes
+from pegasus.game_pb2 import PowerHistory, Tag
 
 class SquirrelHandler(intercept.InterceptHandler):
     def __init__(self, use_premium=False):
@@ -11,15 +11,18 @@ class SquirrelHandler(intercept.InterceptHandler):
         self._use_premium = use_premium
 
     def on_packet(self, epid, packet):
-        if isinstance(packet, mtypes.PowerHistory):
-            for entry in packet.List:
-                if hasattr(entry, 'ShowEntity'):
-                    entry.ShowEntity.Name = 'EX1_tk28' # squirrel
+        if isinstance(packet, PowerHistory):
+            for entry in packet.list:
+                if entry.HasField('show_entity'):
+                    entry.show_entity.name = 'EX1_tk28' # squirrel
 
                     if self._use_premium:
-                        new_tags = [x for x in entry.ShowEntity.Tags if x.Name != enums.GameTag.PREMIUM]
-                        new_tags.append(mtypes.Tag(Name=enums.GameTag.PREMIUM, Value=1))
-                        entry.ShowEntity.Tags = new_tags
+                        for tag in entry.show_entity.tags:
+                            if tag.name == GameTag.PREMIUM:
+                                tag.value = 1
+                                break
+                        else:
+                            entry.show_entity.tags.add(name=GameTag.PREMIUM, value=1)
 
         return intercept.INTERCEPT_ACCEPT
 

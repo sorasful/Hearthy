@@ -1,5 +1,5 @@
 import re
-from ..protocol.decoder import decode_packet, PacketType
+from ..protocol.decoder import decode_packet
 from ..protocol.utils import hexdump, Splitter
 
 READ_BUFSIZE = 16 * 1024
@@ -67,7 +67,8 @@ if __name__ == '__main__':
             print('Sequence: {0}'.format(n))
             hexdump(buf)
             for atype, buf in s.feed(buf):
-                print('\nFound packet {0}:{1}'.format(atype, PacketType(atype)))
+                decoded = decode_packet(atype, buf)
+                print('\nFound packet {0}:{1}'.format(atype, type(decoded).__name__))
                 print('\nDecoded packet:')
-                print(decode_packet(atype, buf))
+                print(decoded)
                 print()

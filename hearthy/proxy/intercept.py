@@ -1,6 +1,7 @@
 import struct
 from hearthy.proxy.pipe import SimpleBuf, SimplePipe
-from hearthy.protocol import decoder, mtypes
+from hearthy.protocol import decoder
+from pegasus.game_pb2 import Handshake
 
 MODE_INTERCEPT, MODE_PASSIVE, MODE_LURKING = range(3)
 INTERCEPT_REJECT, INTERCEPT_ACCEPT = range(2)
@@ -62,7 +63,7 @@ class InterceptPipe(SimplePipe):
             decoded = decoder.decode_packet(*segment)
             print('Decoded first packet, is of type {0!r}'.format(decoded.__class__))
             
-            if isinstance(decoded, mtypes.AuroraHandshake):
+            if isinstance(decoded, Handshake):
                 print('Is an aurora handshake - going into full intercept mode.')
                 self._mode = MODE_INTERCEPT
                 self._handler.on_start_intercept(decoded)
