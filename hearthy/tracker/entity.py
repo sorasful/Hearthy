@@ -1,13 +1,11 @@
 from hearthstone import enums
 from hearthstone.enums import GameTag
 
-from hearthy.protocol.utils import format_tag_value
+from hearthy.protocol.utils import (
+    TAG_CUSTOM_NAME, TAG_POWER_NAME, format_tag_name, format_tag_value
+    )
 from hearthy.exceptions import CardNotFound
 from hearthy.db import cards
-
-# custom tags that aren't in defined in GameTag
-TAG_CUSTOM_NAME = -1
-TAG_POWER_NAME = -2
 
 class EntityBase:
     def __init__(self, eid, tag_list):
@@ -91,7 +89,7 @@ class MutableView(EntityBase):
             ret += ('\n\ttag {1}:{2} {3} -> {4}'.format(
                             self,
                             key,
-                            GameTag(key),
+                            format_tag_name(key),
                             format_tag_value(key, oldval) if oldval else '(unset)',
                             format_tag_value(key, val)))
         return ret

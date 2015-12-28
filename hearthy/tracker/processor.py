@@ -1,8 +1,10 @@
 import logging
 from hearthy.protocol import mtypes
 from hearthy.tracker.world import World
-from hearthy.protocol.utils import format_tag_name, format_tag_value
-from hearthy.tracker.entity import Entity, TAG_CUSTOM_NAME, TAG_POWER_NAME
+from hearthy.protocol.utils import (
+    TAG_CUSTOM_NAME, TAG_POWER_NAME, format_tag_name, format_tag_value
+    )
+from hearthy.tracker.entity import Entity
 
 logger = logging.getLogger(__name__)
 

@@ -5,6 +5,16 @@ from hearthstone.enums import *
 
 from hearthy import exceptions
 
+# custom tags that aren't in defined in GameTag
+TAG_CUSTOM_NAME = -1
+TAG_POWER_NAME = -2
+
+custom_tags_by_id = {
+    value: name[4:]
+    for name, value in locals().items()
+    if name.startswith('TAG_') and isinstance(value, int)
+}
+
 # 16K ought to be enough for anybody :)
 MAX_BUF = 16 * 1024
 
@@ -19,10 +29,14 @@ def hexdump(src, length=16, sep='.', file=sys.stdout):
     print('\n'.join(lines), file=file)
 
 def format_tag_name(tag_id):
-    try:
-        return GameTag(tag_id).name
-    except ValueError:
-        return 'TAG_{0:d}'.format(tag_id)
+    if tag_id < 0:
+        return custom_tags_by_id[tag_id]
+    else:
+        try:
+            return GameTag(tag_id).name
+        except ValueError:
+            # Tag which does not exist in our protocol definitions.
+            return 'TAG_{0:d}'.format(tag_id)
 
 _gametag_to_enum = {
     GameTag.ZONE: Zone,
