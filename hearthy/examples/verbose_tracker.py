@@ -26,6 +26,9 @@ if __name__ == '__main__':
         print('Usage: {0} <hcapng file>'.format(sys.argv[0]))
         sys.exit(1)
 
+    import logging
+    logging.getLogger().setLevel(logging.DEBUG)
+
     d = {}
     with open(sys.argv[1], 'rb') as f:
         parser = hcapng.parse(f)
