@@ -1,2 +1,14 @@
--e git+https://github.com/HearthSim/python-hearthstone.git#egg=hearthstone
-py3-protobuffers>=3.0.0a4
+# Requirements pour Modern Hearthy
+# Version moderne avec support async et type hints
+
+# Core dependencies
+protobuf>=4.0.0
+typing-extensions>=4.0.0
+
+# Optional: pour le support des cartes Hearthstone
+# hearthstone>=1.0.0
+
+# Development dependencies (optionnel)
+# pytest>=7.0.0
+# mypy>=1.0.0
+# black>=22.0.0
